@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aphea.xmssrv.mapper.UserInfoMapper">
+    <insert id="addUser" parameterType="com.aphea.xmssrv.pojo.UserInfo">
+        insert into user_info
+        (create_time, update_time, is_deleted, account, full_name, org_id, phone, gender, password)
+        VALUES (NOW(), NOW(), 0, #{account}, #{fullName}, #{orgId}, #{phone}, #{gender})
+    </insert>
+    <update id="deleteUser">
+        update user_info
+        set is_deleted=1
+        where id = #{id}
+    </update>
+    <update id="updateUser" parameterType="com.aphea.xmssrv.pojo.UserInfo">
+        update user_info
+        set update_time=now(),
+            account=#{account},
+            full_name=#{fullName},
+            org_id=#{orgId},
+            phone=#{phone},
+            gender=#{gender}
+        where id = #{id}
+    </update>
+    <select id="getUserList" resultType="com.aphea.xmssrv.pojo.UserInfoVO">
+        select u.id,
+               u.create_time,
+               u.update_time,
+               u.is_deleted,
+               u.account,
+               u.full_name,
+               u.org_id,
+               u.phone,
+               u.gender,
+               u.password,
+               o.full_name as orgName
+        from user_info as u
+        left join org_info as o on u.org_id = o.id
+        limit #{start}, #{size}
+    </select>
+    <select id="getUserByAcoount" resultType="com.aphea.xmssrv.pojo.UserInfoVO">
+        select u.id,
+               u.create_time,
+               u.update_time,
+               u.is_deleted,
+               u.account,
+               u.full_name,
+               u.org_id,
+               u.phone,
+               u.gender,
+               u.password,
+               o.full_name as orgName
+        from user_info as u
+                 left join org_info as o on u.org_id = o.id
+        where u.account = #{account}
+    </select>
+    <select id="getUserRole" resultType="string">
+        select role_info.name
+        from user_role,
+             role_info
+        where user_role.user_id = #{userId}
+          and user_role.role_id = role_info.id
+    </select>
+</mapper>
